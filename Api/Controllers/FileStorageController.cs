@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers
 {
     [ApiVersion("1.0")]
-    [Route("/api/[controller]")]
+    [Route("/api/[controller]/[action]")]
     [ApiController]
     public class FileStorageController : ControllerBase
     {
@@ -20,7 +20,12 @@ namespace Api.Controllers
             _fileStorageService = fileStorageService;
         }
         
-        [HttpPost("Upload")]
+        /// <summary>
+        /// Upload files to storage
+        /// </summary>
+        /// <param name="files"></param>
+        /// <returns></returns>
+        [HttpPost]
         public async Task<ResultContainer<ICollection<FileResponseDto>>> Upload(IFormFileCollection files)
             => await _fileStorageService.Upload(files);
     }
