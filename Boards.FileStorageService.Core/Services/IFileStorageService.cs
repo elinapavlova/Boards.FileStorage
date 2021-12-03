@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Boards.FileStorageService.Core.Dto.File;
 using Common.Result;
-using Core.Dto.File;
 using Microsoft.AspNetCore.Http;
 
-namespace Core.Services
+namespace Boards.FileStorageService.Core.Services
 {
     public interface IFileStorageService
     {

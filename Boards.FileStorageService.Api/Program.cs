@@ -4,7 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog.Web;
 
-namespace Api
+namespace Boards.FileStorageService.Api
 {
     public class Program
     {

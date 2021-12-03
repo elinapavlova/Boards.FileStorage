@@ -4,13 +4,13 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Boards.FileStorageService.Core.Dto.File;
+using Boards.FileStorageService.Core.Options;
 using Common.Error;
 using Common.Result;
-using Core.Dto.File;
-using Core.Options;
 using Microsoft.AspNetCore.Http;
 
-namespace Core.Services
+namespace Boards.FileStorageService.Core.Services
 {
     public class FileStorageService : IFileStorageService
     {

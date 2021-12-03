@@ -1,12 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "Api\Api.csproj", "{9371DE5B-3B52-4F0C-AFE0-AB343F2CAEE1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Boards.FileStorageService.Api", "Boards.FileStorageService.Api\Boards.FileStorageService.Api.csproj", "{9371DE5B-3B52-4F0C-AFE0-AB343F2CAEE1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "..\AuthService\Common\Common.csproj", "{BFDD65E0-1229-42FD-947F-D8472698605C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{E9A984EF-3E88-46C6-91D4-E162F26FFA58}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Boards.FileStorageService.Core", "Boards.FileStorageService.Core\Boards.FileStorageService.Core.csproj", "{E9A984EF-3E88-46C6-91D4-E162F26FFA58}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database", "Database\Database.csproj", "{FA96BACD-E89D-4142-85A7-7FC05259F2FC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Boards.FileStorageService.Database", "Boards.FileStorageService.Database\Boards.FileStorageService.Database.csproj", "{FA96BACD-E89D-4142-85A7-7FC05259F2FC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

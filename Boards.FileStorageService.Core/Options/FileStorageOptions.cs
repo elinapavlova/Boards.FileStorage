@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Core.Options
+namespace Boards.FileStorageService.Core.Options
 {
     public class FileStorageOptions
     {

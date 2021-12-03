@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Core.ContentType
+namespace Boards.FileStorageService.Core.ContentType
 {
     public static class ContentTypes
     {

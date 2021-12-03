@@ -2,9 +2,9 @@ using System;
 using System.IO;
 using System.Reflection;
 using AutoMapper;
-using Core.Options;
-using Core.Profiles;
-using Core.Services;
+using Boards.FileStorageService.Core.Options;
+using Boards.FileStorageService.Core.Profiles;
+using Boards.FileStorageService.Core.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Api
+namespace Boards.FileStorageService.Api
 {
     public class Startup
     {
@@ -32,7 +32,7 @@ namespace Api
             var fileStorageOptions = Configuration.GetSection(FileStorageOptions.FileStorage).Get<FileStorageOptions>();
             services.AddSingleton(fileStorageOptions);
             
-            services.AddScoped<IFileStorageService, FileStorageService>();
+            services.AddScoped<IFileStorageService, Core.Services.FileStorageService>();
             
             // Configure AutoMapper profiles
             var mapperConfig = new MapperConfiguration(mc =>
@@ -42,13 +42,13 @@ namespace Api
             var mapper = mapperConfig.CreateMapper();
             services.AddSingleton(mapper);
             
-            // Configure Api
+            // Configure Boards.FileStorageService.Api
             services.AddApiVersioning(options =>
             {
                 options.DefaultApiVersion = new ApiVersion(1, 0);
                 options.AssumeDefaultVersionWhenUnspecified = true;
                 options.ReportApiVersions = true;
-                options.ApiVersionReader = new QueryStringApiVersionReader();
+                options.ApiVersionReader = new HeaderApiVersionReader("api-version");
             });
             services.AddVersionedApiExplorer(options =>
             {

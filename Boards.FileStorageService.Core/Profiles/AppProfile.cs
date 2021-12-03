@@ -1,14 +1,14 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
-using FileResponseDto = Core.Dto.File.FileResponseDto;
+using FileResponseDto = Boards.FileStorageService.Core.Dto.File.FileResponseDto;
 
-namespace Core.Profiles
+namespace Boards.FileStorageService.Core.Profiles
 {
     public class AppProfile : Profile
     {
         public AppProfile()
         {
-            CreateMap<IFormFile, FileResponseDto>()
+            CreateMap<IFormFile, Dto.File.FileResponseDto>()
                 .ForMember("Name", opt => 
                     opt.MapFrom(f => f.FileName));
         }

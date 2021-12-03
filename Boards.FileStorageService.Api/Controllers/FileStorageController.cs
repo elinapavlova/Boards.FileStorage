@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Common.Result;
-using Core.Dto.File;
-using Core.Services;
+using Boards.FileStorageService.Core.Dto.File;
+using Boards.FileStorageService.Core.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Api.Controllers
+namespace Boards.FileStorageService.Api.Controllers
 {
     [ApiVersion("1.0")]
     [Route("/api/[controller]/[action]")]

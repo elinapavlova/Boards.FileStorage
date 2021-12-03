@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Core.Dto.File
+namespace Boards.FileStorageService.Core.Dto.File
 {
     public class FileResponseDto
     {

@@ -14,7 +14,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\AuthService\Common\Common.csproj" />
-      <ProjectReference Include="..\Core\Core.csproj" />
+      <ProjectReference Include="..\Boards.FileStorageService.Core\Boards.FileStorageService.Core.csproj" />
     </ItemGroup>
 
 </Project>
