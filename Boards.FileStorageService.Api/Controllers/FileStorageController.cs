@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Common.Result;
+using Boards.Common.Result;
 using Boards.FileStorageService.Core.Dto.File;
 using Boards.FileStorageService.Core.Services;
 using Microsoft.AspNetCore.Http;

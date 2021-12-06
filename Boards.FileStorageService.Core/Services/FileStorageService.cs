@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Boards.FileStorageService.Core.Dto.File;
 using Boards.FileStorageService.Core.Options;
-using Common.Error;
-using Common.Result;
+using Boards.Common.Error;
+using Boards.Common.Result;
 using Microsoft.AspNetCore.Http;
 
 namespace Boards.FileStorageService.Core.Services
