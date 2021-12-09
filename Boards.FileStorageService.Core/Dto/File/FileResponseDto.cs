@@ -7,7 +7,6 @@ namespace Boards.FileStorageService.Core.Dto.File
         public string Name { get; set; }
         public string Path { get; set; }
         public string Extension { get; set; }
-        public DateTime DateCreated { get; set; }
-
+        public Uri Url { get; set; }
     }
 }

@@ -2,15 +2,19 @@ using System;
 using System.IO;
 using System.Reflection;
 using AutoMapper;
+using Boards.Common.Options;
 using Boards.FileStorageService.Core.Options;
 using Boards.FileStorageService.Core.Profiles;
 using Boards.FileStorageService.Core.Services;
+using Boards.FileStorageService.Database;
+using Boards.FileStorageService.Database.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -32,6 +36,15 @@ namespace Boards.FileStorageService.Api
             var fileStorageOptions = Configuration.GetSection(FileStorageOptions.FileStorage).Get<FileStorageOptions>();
             services.AddSingleton(fileStorageOptions);
             
+            services.Configure<AppOptions>(Configuration.GetSection(AppOptions.App));
+            var appOptions = Configuration.GetSection(AppOptions.App).Get<AppOptions>();
+            services.AddSingleton(appOptions);
+            
+            var connection = Configuration.GetConnectionString("DefaultConnection");
+            services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connection,  
+                x => x.MigrationsAssembly("Boards.FileStorageService.Database")));
+
+            services.AddScoped<IFileRepository, FileRepository>();
             services.AddScoped<IFileStorageService, Core.Services.FileStorageService>();
             
             // Configure AutoMapper profiles
@@ -48,7 +61,7 @@ namespace Boards.FileStorageService.Api
                 options.DefaultApiVersion = new ApiVersion(1, 0);
                 options.AssumeDefaultVersionWhenUnspecified = true;
                 options.ReportApiVersions = true;
-                options.ApiVersionReader = new HeaderApiVersionReader("api-version");
+                options.ApiVersionReader = new UrlSegmentApiVersionReader();
             });
             services.AddVersionedApiExplorer(options =>
             {

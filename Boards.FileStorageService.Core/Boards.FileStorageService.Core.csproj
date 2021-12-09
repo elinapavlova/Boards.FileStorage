@@ -12,10 +12,12 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\AuthService\Boards.Common\Boards.Common.csproj" />
+      <ProjectReference Include="..\Boards.FileStorageService.Database\Boards.FileStorageService.Database.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="AutoMapper" Version="10.1.1" />
+      <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.12" />
     </ItemGroup>
 
 </Project>

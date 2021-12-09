@@ -1,13 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Boards.FileStorageService.Core.Dto.File;
-using Boards.Common.Result;
 using Microsoft.AspNetCore.Http;
 
 namespace Boards.FileStorageService.Core.Services
 {
     public interface IFileStorageService
     {
-        Task<ResultContainer<ICollection<FileResponseDto>>> Upload(IFormFileCollection files);
+        Task<ICollection<FileResponseDto>> Upload(IFormFileCollection files);
+        Task<FileResultDto> GetFile(Uri uri);
+        Task<ICollection<FileResultDto>> GetByThreadId(Guid id);
+        Task<ICollection<FileResultDto>> GetByMessageId(Guid id);
     }
 }

@@ -1,93 +1,122 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
-using Boards.FileStorageService.Core.Dto.File;
 using Boards.FileStorageService.Core.Options;
-using Boards.Common.Error;
-using Boards.Common.Result;
+using Boards.Common.Options;
+using Boards.FileStorageService.Core.Dto.File;
+using Boards.FileStorageService.Core.File;
+using Boards.FileStorageService.Database.Repositories;
 using Microsoft.AspNetCore.Http;
 
 namespace Boards.FileStorageService.Core.Services
 {
     public class FileStorageService : IFileStorageService
     {
-        private readonly IMapper _mapper;
         private readonly string _basePath;
         private readonly Dictionary<string, string> _catalogues;
+        private readonly Uri _baseUri;
+        private readonly IFileRepository _fileRepository;
 
         public FileStorageService
         (
-            IMapper mapper, 
-            FileStorageOptions options
+            FileStorageOptions options,
+            AppOptions appOptions,
+             IFileRepository fileRepository
         )
         {
-            _mapper = mapper;
             _basePath = options.BasePath;
             _catalogues = options.CataloguesName;
+            _baseUri = new Uri(appOptions.Urls);
+            _fileRepository = fileRepository;
         }
         
-        public async Task<ResultContainer<ICollection<FileResponseDto>>> Upload(IFormFileCollection files)
+        public async Task<ICollection<FileResponseDto>> Upload(IFormFileCollection files)
         {
-            ResultContainer<ICollection<FileResponseDto>> result;
+            if (files.Any(file => !FileExtensions.Extensions.Contains(Path.GetExtension(file.FileName))))
+                return null;
 
-            // Если есть файлы с неподдерживаемым типом
-            if (files.Any(f => !ContentType.ContentTypes.ContentType.Contains(f.ContentType)))
-            {
-                result = CreateBadResult(files);
-                return result;
-            }
-
-            result = await UploadFiles(files);
+            var result = await UploadFiles(files);
             return result;
         }
-        
-        private ResultContainer<ICollection<FileResponseDto>> CreateBadResult(IFormFileCollection files)
+
+        public async Task<FileResultDto> GetFile(Uri uri)
         {
-            var result = new ResultContainer<ICollection<FileResponseDto>>
-            {
-                Data = new List<FileResponseDto>()
-            };
+            var name = uri.AbsolutePath.Split('/').LastOrDefault();
+            if (name == null)
+                return null;
             
-            foreach (var file in files)
+            var path = Directory.GetFiles(_basePath, name, SearchOption.AllDirectories).FirstOrDefault();
+            if (path == null)
+                return null;
+            
+            var contentType = "";
+            switch (Path.GetExtension(name))
             {
-                // Если у файла неподдерживаемый тип
-                if (!ContentType.ContentTypes.ContentType.Contains(file.ContentType))
-                {
-                    var invalidFile = _mapper.Map<FileResponseDto>(file);
-                    result.Data.Add(invalidFile);
+                case ".jpg" :
+                case ".jpeg":
+                    contentType = "image/jpeg";
                     break;
-                }
-                
-                result.Data.Add(_mapper.Map<FileResponseDto>(file));
+                case ".png" :
+                    contentType = "image/png";
+                    break;
+                case ".mp4" :
+                    contentType = "video/mp4";
+                    break;
             }
-            
-            result.ErrorType = ErrorType.BadRequest;
-            
+
+            var bytes = (await System.IO.File.ReadAllBytesAsync(path)).ToArray();
+
+            var file = new FileResultDto
+            {
+                Bytes = bytes,
+                ContentType = contentType,
+                Url = uri
+            };
+            return file;
+        }
+
+        public async Task<ICollection<FileResultDto>> GetByThreadId(Guid id)
+        {
+            var files = _fileRepository.Get(f => f.ThreadId == id && f.MessageId == null);
+            var result = new Collection<FileResultDto>();
+            foreach (var uri in files.Select(file => CreateUrl(file.Path)))
+                result.Add(await GetFile(uri));
+
             return result;
         }
         
-        private async Task<ResultContainer<ICollection<FileResponseDto>>> UploadFiles(IFormFileCollection files)
+        public async Task<ICollection<FileResultDto>> GetByMessageId(Guid id)
         {
-            var result = new ResultContainer<ICollection<FileResponseDto>>
-            {
-                Data = new List<FileResponseDto>()
-            };
+            var files = _fileRepository.Get(f => f.MessageId == id);
+            var result = new Collection<FileResultDto>();
+            foreach (var uri in files.Select(file => CreateUrl(file.Path)))
+                result.Add(await GetFile(uri));
+
+            return result;
+        }
+
+        private async Task<ICollection<FileResponseDto>> UploadFiles(IFormFileCollection files)
+        {
+            var result = new List<FileResponseDto>();
             
             foreach (var file in files)
             {
                 var absolutePath = CreateAbsolutePath(file.FileName);
                 
-                await using var fileStream = File.Create(absolutePath);
+                await using var fileStream = System.IO.File.Create(absolutePath);
                 await file.CopyToAsync(fileStream);
-                
-                var fileResponse = _mapper.Map<FileResponseDto>(file);
-                fileResponse.DateCreated = DateTime.Now;
-                fileResponse.Path = absolutePath;
-                fileResponse.Extension = Path.GetExtension(file.FileName);
-                result.Data.Add(_mapper.Map<FileResponseDto>(fileResponse));
+
+                var newfile = new FileResponseDto
+                {
+                    Name = file.FileName,
+                    Path = absolutePath,
+                    Extension = Path.GetExtension(absolutePath),
+                    Url = CreateUrl(absolutePath)
+                };
+                result.Add(newfile);
             }
 
             return result;
@@ -104,22 +133,24 @@ namespace Boards.FileStorageService.Core.Services
                     _catalogues.TryGetValue("Video",  out var catalogue);
                     absolutePath = Path.Combine(_basePath, catalogue, Guid.NewGuid() + extension);
                     break;
-                case ".wav" :
-                    _catalogues.TryGetValue("Audio",  out catalogue);
-                    absolutePath = Path.Combine(_basePath, catalogue, Guid.NewGuid() + extension);
-                    break;
-                case ".txt" :
-                    _catalogues.TryGetValue("Text",  out catalogue);
-                    absolutePath = Path.Combine(_basePath, catalogue, Guid.NewGuid() + extension);
-                    break;
                 case ".png" :
                 case ".jpg" :
+                case ".jpeg":
                     _catalogues.TryGetValue("Images",  out catalogue);
                     absolutePath = Path.Combine(_basePath, catalogue, Guid.NewGuid() + extension);
                     break;
             }
 
             return absolutePath;
+        }
+
+        private Uri CreateUrl(string path)
+        {
+            var name = Path.GetFileName(path);
+            var catalogue = Directory.GetParent(path);
+            var pathToFile = Path.Combine("api/v1/", catalogue.Parent.Name, catalogue.Name, name);
+            var url = new Uri(_baseUri, pathToFile);
+            return url;
         }
     }
 }

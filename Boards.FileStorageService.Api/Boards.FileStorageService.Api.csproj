@@ -9,12 +9,14 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0" />
         <PackageReference Include="NLog.Web.AspNetCore" Version="4.14.0" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.10" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\..\AuthService\Boards.Common\Boards.Common.csproj" />
       <ProjectReference Include="..\Boards.FileStorageService.Core\Boards.FileStorageService.Core.csproj" />
+      <ProjectReference Include="..\Boards.FileStorageService.Database\Boards.FileStorageService.Database.csproj" />
     </ItemGroup>
 
 </Project>
