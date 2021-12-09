@@ -35,7 +35,7 @@ namespace Boards.FileStorageService.Core.Services
         
         public async Task<ICollection<FileResponseDto>> Upload(IFormFileCollection files)
         {
-            if (files.Any(file => !FileExtensions.Extensions.Contains(Path.GetExtension(file.FileName))))
+            if (files.Any(file => !FileExtensions.Extensions.ContainsKey(Path.GetExtension(file.FileName))))
                 return null;
 
             var result = await UploadFiles(files);
@@ -52,22 +52,12 @@ namespace Boards.FileStorageService.Core.Services
             if (path == null)
                 return null;
             
-            var contentType = "";
-            switch (Path.GetExtension(name))
-            {
-                case ".jpg" :
-                case ".jpeg":
-                    contentType = "image/jpeg";
-                    break;
-                case ".png" :
-                    contentType = "image/png";
-                    break;
-                case ".mp4" :
-                    contentType = "video/mp4";
-                    break;
-            }
+            var contentType = FileExtensions.Extensions.Keys
+                .FirstOrDefault(f => f.Equals(Path.GetExtension(name)));
 
-            var bytes = (await System.IO.File.ReadAllBytesAsync(path)).ToArray();
+            await using var filestream = new FileStream(path, FileMode.Open, FileAccess.Read);
+            var bytes = new byte[filestream.Length];
+            await filestream.ReadAsync(bytes.AsMemory(0, (int) filestream.Length));
 
             var file = new FileResultDto
             {
