@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Boards.FileStorageService.Core.Options;
-using Boards.Common.Options;
+using Boards.Auth.Common.Options;
 using Boards.FileStorageService.Core.Dto.File;
 using Boards.FileStorageService.Core.File;
 using Boards.FileStorageService.Database.Repositories;

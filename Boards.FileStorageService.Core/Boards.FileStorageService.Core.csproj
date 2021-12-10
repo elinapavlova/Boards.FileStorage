@@ -11,7 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\AuthService\Boards.Common\Boards.Common.csproj" />
+      <ProjectReference Include="..\..\AuthService\Boards.Auth.Common\Boards.Auth.Common.csproj" />
       <ProjectReference Include="..\Boards.FileStorageService.Database\Boards.FileStorageService.Database.csproj" />
     </ItemGroup>
 

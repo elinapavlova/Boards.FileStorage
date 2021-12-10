@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using AutoMapper;
-using Boards.Common.Options;
+using Boards.Auth.Common.Options;
 using Boards.FileStorageService.Core.Options;
 using Boards.FileStorageService.Core.Profiles;
 using Boards.FileStorageService.Core.Services;
