@@ -8,6 +8,12 @@
       <Reference Include="Microsoft.AspNetCore.Http.Features, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
         <HintPath>..\..\..\..\..\..\Program Files\dotnet\shared\Microsoft.AspNetCore.App\5.0.8\Microsoft.AspNetCore.Http.Features.dll</HintPath>
       </Reference>
+      <Reference Include="Microsoft.AspNetCore.Mvc.Core, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+        <HintPath>..\..\..\..\..\..\Program Files\dotnet\shared\Microsoft.AspNetCore.App\5.0.3\Microsoft.AspNetCore.Mvc.Core.dll</HintPath>
+      </Reference>
+        <Reference Include="Microsoft.Net.Http.Headers, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+            <HintPath>..\..\..\..\..\..\Program Files\dotnet\shared\Microsoft.Net.App\5.0.3\Microsoft.Net.Http.Headers.dll</HintPath>
+        </Reference>
     </ItemGroup>
 
     <ItemGroup>

@@ -1,11 +1,11 @@
-﻿using System;
+﻿using System.IO;
 
 namespace Boards.FileStorageService.Core.Dto.File
 {
     public class FileResultDto
     {
-        public byte[] Bytes { get; set; }
+        public FileStream Stream { get; set; }
         public string ContentType { get; set; }
-        public Uri Url { get; set; }
+        public string FileName { get; set; }
     }
 }

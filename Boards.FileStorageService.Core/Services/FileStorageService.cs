@@ -51,29 +51,32 @@ namespace Boards.FileStorageService.Core.Services
             var path = Directory.GetFiles(_basePath, name, SearchOption.AllDirectories).FirstOrDefault();
             if (path == null)
                 return null;
+
+            return await GetFile(path, name);
+        }
+
+        private async Task<FileResultDto> GetFile(string path, string name)
+        {
+            var contentType = FileExtensions.Extensions
+                .FirstOrDefault(f => f.Key.Equals(Path.GetExtension(path)))
+                .Value;
             
-            var contentType = FileExtensions.Extensions.Keys
-                .FirstOrDefault(f => f.Equals(Path.GetExtension(name)));
-
-            await using var filestream = new FileStream(path, FileMode.Open, FileAccess.Read);
-            var bytes = new byte[filestream.Length];
-            await filestream.ReadAsync(bytes.AsMemory(0, (int) filestream.Length));
-
-            var file = new FileResultDto
+            var filestream = new FileStream(path, FileMode.Open, FileAccess.Read);
+            var result = new FileResultDto
             {
-                Bytes = bytes,
+                Stream = filestream,
                 ContentType = contentType,
-                Url = uri
+                FileName = name
             };
-            return file;
+            return result;
         }
 
         public async Task<ICollection<FileResultDto>> GetByThreadId(Guid id)
         {
             var files = _fileRepository.Get(f => f.ThreadId == id && f.MessageId == null);
             var result = new Collection<FileResultDto>();
-            foreach (var uri in files.Select(file => CreateUrl(file.Path)))
-                result.Add(await GetFile(uri));
+            foreach (var file in files)
+                result.Add(await GetFile(file.Path, Path.GetFileName(file.Path)));
 
             return result;
         }
@@ -82,8 +85,8 @@ namespace Boards.FileStorageService.Core.Services
         {
             var files = _fileRepository.Get(f => f.MessageId == id);
             var result = new Collection<FileResultDto>();
-            foreach (var uri in files.Select(file => CreateUrl(file.Path)))
-                result.Add(await GetFile(uri));
+            foreach (var file in files)
+                result.Add(await GetFile(file.Path, Path.GetFileName(file.Path)));
 
             return result;
         }

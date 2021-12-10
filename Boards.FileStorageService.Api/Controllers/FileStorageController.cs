@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Boards.FileStorageService.Core.Dto.File;
 using Boards.FileStorageService.Core.Services;
@@ -38,8 +39,11 @@ namespace Boards.FileStorageService.Api.Controllers
         /// <returns></returns>
         [HttpPost("Get-File")]
         [AllowAnonymous]
-        public async Task<FileResultDto> GetFile(Uri url)
-            => await _fileStorageService.GetFile(url);
+        public async Task<FileResult> GetFile(Uri url)
+        {
+            var result = await _fileStorageService.GetFile(url);
+            return File(result.Stream, result.ContentType);
+        }
 
         /// <summary>
         /// Get files by thread Id
@@ -47,8 +51,15 @@ namespace Boards.FileStorageService.Api.Controllers
         /// <returns></returns>
         [HttpPost("By-Thread-Id/{id:guid}")]
         [AllowAnonymous]
-        public async Task<ICollection<FileResultDto>> GetByThreadId(Guid id)
-            => await _fileStorageService.GetByThreadId(id);
+        public async Task<Collection<FileResult>> GetByThreadId(Guid id)
+        {
+            var files = await _fileStorageService.GetByThreadId(id);
+            var result = new Collection<FileResult>();
+            
+            foreach(var file in files)
+                result.Add(File(file.Stream, file.ContentType, file.FileName));
+            return result;
+        }
         
         /// <summary>
         /// Get files by message Id
@@ -56,7 +67,14 @@ namespace Boards.FileStorageService.Api.Controllers
         /// <returns></returns>
         [HttpPost("By-Message-Id/{id:guid}")]
         [AllowAnonymous]
-        public async Task<ICollection<FileResultDto>> GetByMessageId(Guid id)
-            => await _fileStorageService.GetByMessageId(id);
+        public async Task<ICollection<FileResult>> GetByMessageId(Guid id)
+        {
+            var files = await _fileStorageService.GetByMessageId(id);
+            var result = new Collection<FileResult>();
+            
+            foreach(var file in files)
+                result.Add(File(file.Stream, file.ContentType, file.FileName));
+            return result;
+        }
     }
 }
