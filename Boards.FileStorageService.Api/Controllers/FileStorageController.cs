@@ -33,15 +33,15 @@ namespace Boards.FileStorageService.Api.Controllers
             => await _fileStorageService.Upload(files);
 
         /// <summary>
-        /// Get file by url
+        /// Get file by id
         /// </summary>
-        /// <param name="url"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
-        [HttpPost("Get-File")]
+        [HttpGet("{id:guid}")]
         [AllowAnonymous]
-        public async Task<FileResult> GetFile(Uri url)
+        public async Task<FileResult> GetFileById(Guid id)
         {
-            var result = await _fileStorageService.GetFile(url);
+            var result = await _fileStorageService.GetById(id);
             return File(result.Stream, result.ContentType);
         }
 
@@ -49,7 +49,7 @@ namespace Boards.FileStorageService.Api.Controllers
         /// Get files by thread Id
         /// </summary>
         /// <returns></returns>
-        [HttpPost("By-Thread-Id/{id:guid}")]
+        [HttpGet("Thread/{id:guid}/Files")]
         [AllowAnonymous]
         public async Task<Collection<FileResult>> GetByThreadId(Guid id)
         {
@@ -65,7 +65,7 @@ namespace Boards.FileStorageService.Api.Controllers
         /// Get files by message Id
         /// </summary>
         /// <returns></returns>
-        [HttpPost("By-Message-Id/{id:guid}")]
+        [HttpGet("Message/{id:guid}/Files")]
         [AllowAnonymous]
         public async Task<ICollection<FileResult>> GetByMessageId(Guid id)
         {

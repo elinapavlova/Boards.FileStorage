@@ -38,61 +38,6 @@ namespace Boards.FileStorageService.Core.Services
             if (files.Any(file => !FileExtensions.Extensions.ContainsKey(Path.GetExtension(file.FileName))))
                 return null;
 
-            var result = await UploadFiles(files);
-            return result;
-        }
-
-        public async Task<FileResultDto> GetFile(Uri uri)
-        {
-            var name = uri.AbsolutePath.Split('/').LastOrDefault();
-            if (name == null)
-                return null;
-            
-            var path = Directory.GetFiles(_basePath, name, SearchOption.AllDirectories).FirstOrDefault();
-            if (path == null)
-                return null;
-
-            return await GetFile(path, name);
-        }
-
-        private async Task<FileResultDto> GetFile(string path, string name)
-        {
-            var contentType = FileExtensions.Extensions
-                .FirstOrDefault(f => f.Key.Equals(Path.GetExtension(path)))
-                .Value;
-            
-            var filestream = new FileStream(path, FileMode.Open, FileAccess.Read);
-            var result = new FileResultDto
-            {
-                Stream = filestream,
-                ContentType = contentType,
-                FileName = name
-            };
-            return result;
-        }
-
-        public async Task<ICollection<FileResultDto>> GetByThreadId(Guid id)
-        {
-            var files = _fileRepository.Get(f => f.ThreadId == id && f.MessageId == null);
-            var result = new Collection<FileResultDto>();
-            foreach (var file in files)
-                result.Add(await GetFile(file.Path, Path.GetFileName(file.Path)));
-
-            return result;
-        }
-        
-        public async Task<ICollection<FileResultDto>> GetByMessageId(Guid id)
-        {
-            var files = _fileRepository.Get(f => f.MessageId == id);
-            var result = new Collection<FileResultDto>();
-            foreach (var file in files)
-                result.Add(await GetFile(file.Path, Path.GetFileName(file.Path)));
-
-            return result;
-        }
-
-        private async Task<ICollection<FileResponseDto>> UploadFiles(IFormFileCollection files)
-        {
             var result = new List<FileResponseDto>();
             
             foreach (var file in files)
@@ -111,6 +56,49 @@ namespace Boards.FileStorageService.Core.Services
                 };
                 result.Add(newfile);
             }
+            return result;
+        }
+
+        public async Task<FileResultDto> GetById(Guid id)
+        {
+            var file = await _fileRepository.GetById(id);
+            if (file == null)
+                return null;
+            
+            var name = Path.GetFileName(file.Path);
+            if (name == null)
+                return null;
+            
+            var contentType = FileExtensions.Extensions
+                .FirstOrDefault(f => f.Key.Equals(file.Extension))
+                .Value;
+
+            var filestream = new FileStream(file.Path, FileMode.Open, FileAccess.Read);
+            var result = new FileResultDto
+            {
+                Stream = filestream,
+                ContentType = contentType,
+                FileName = name
+            };
+            return result;
+        }
+
+        public async Task<ICollection<FileResultDto>> GetByThreadId(Guid id)
+        {
+            var files = _fileRepository.GetByThreadId(id);
+            var result = new Collection<FileResultDto>();
+            foreach (var file in files)
+                result.Add(await GetById(file.Id));
+
+            return result;
+        }
+        
+        public async Task<ICollection<FileResultDto>> GetByMessageId(Guid id)
+        {
+            var files = _fileRepository.GetByMessageId(id);
+            var result = new Collection<FileResultDto>();
+            foreach (var file in files)
+                result.Add(await GetById(file.Id));
 
             return result;
         }
