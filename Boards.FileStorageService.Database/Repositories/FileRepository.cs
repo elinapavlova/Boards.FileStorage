@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Boards.FileStorageService.Database.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace Boards.FileStorageService.Database.Repositories
 {
@@ -14,26 +11,6 @@ namespace Boards.FileStorageService.Database.Repositories
         public FileRepository(AppDbContext context)
         {
             _context = context;
-        }
-
-        public IEnumerable<FileModel> GetByMessageId(Guid id)
-        {
-            return _context
-                .Set<FileModel>()
-                .AsNoTracking()
-                .AsEnumerable()
-                .Where(f => f.MessageId == id)
-                .ToList();
-        }
-
-        public IEnumerable<FileModel> GetByThreadId(Guid id)
-        {
-            return _context
-                .Set<FileModel>()
-                .AsNoTracking()
-                .AsEnumerable()
-                .Where(f => f.ThreadId == id && f.MessageId == null)
-                .ToList();
         }
 
         public async Task<FileModel> GetById(Guid id)

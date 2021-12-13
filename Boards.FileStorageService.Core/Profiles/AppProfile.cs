@@ -8,7 +8,7 @@ namespace Boards.FileStorageService.Core.Profiles
     {
         public AppProfile()
         {
-            CreateMap<IFormFile, Dto.File.FileResponseDto>()
+            CreateMap<IFormFile, FileResponseDto>()
                 .ForMember("Name", opt => 
                     opt.MapFrom(f => f.FileName));
         }

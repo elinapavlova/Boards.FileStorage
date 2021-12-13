@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -80,26 +79,6 @@ namespace Boards.FileStorageService.Core.Services
                 ContentType = contentType,
                 FileName = name
             };
-            return result;
-        }
-
-        public async Task<ICollection<FileResultDto>> GetByThreadId(Guid id)
-        {
-            var files = _fileRepository.GetByThreadId(id);
-            var result = new Collection<FileResultDto>();
-            foreach (var file in files)
-                result.Add(await GetById(file.Id));
-
-            return result;
-        }
-        
-        public async Task<ICollection<FileResultDto>> GetByMessageId(Guid id)
-        {
-            var files = _fileRepository.GetByMessageId(id);
-            var result = new Collection<FileResultDto>();
-            foreach (var file in files)
-                result.Add(await GetById(file.Id));
-
             return result;
         }
 

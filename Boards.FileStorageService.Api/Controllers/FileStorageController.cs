@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Boards.FileStorageService.Core.Dto.File;
 using Boards.FileStorageService.Core.Services;
@@ -43,38 +42,6 @@ namespace Boards.FileStorageService.Api.Controllers
         {
             var result = await _fileStorageService.GetById(id);
             return File(result.Stream, result.ContentType);
-        }
-
-        /// <summary>
-        /// Get files by thread Id
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("Thread/{id:guid}/Files")]
-        [AllowAnonymous]
-        public async Task<Collection<FileResult>> GetByThreadId(Guid id)
-        {
-            var files = await _fileStorageService.GetByThreadId(id);
-            var result = new Collection<FileResult>();
-            
-            foreach(var file in files)
-                result.Add(File(file.Stream, file.ContentType, file.FileName));
-            return result;
-        }
-        
-        /// <summary>
-        /// Get files by message Id
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("Message/{id:guid}/Files")]
-        [AllowAnonymous]
-        public async Task<ICollection<FileResult>> GetByMessageId(Guid id)
-        {
-            var files = await _fileStorageService.GetByMessageId(id);
-            var result = new Collection<FileResult>();
-            
-            foreach(var file in files)
-                result.Add(File(file.Stream, file.ContentType, file.FileName));
-            return result;
         }
     }
 }
