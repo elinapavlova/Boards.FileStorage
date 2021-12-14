@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Boards.FileStorageService.Core.Options;
-using Boards.Auth.Common.Options;
 using Boards.FileStorageService.Core.Dto.File;
 using Boards.FileStorageService.Core.File;
 using Boards.FileStorageService.Database.Repositories;
@@ -16,25 +15,22 @@ namespace Boards.FileStorageService.Core.Services
     {
         private readonly string _basePath;
         private readonly Dictionary<string, string> _catalogues;
-        private readonly Uri _baseUri;
         private readonly IFileRepository _fileRepository;
 
         public FileStorageService
         (
             FileStorageOptions options,
-            AppOptions appOptions,
-             IFileRepository fileRepository
+            IFileRepository fileRepository
         )
         {
             _basePath = options.BasePath;
             _catalogues = options.CataloguesName;
-            _baseUri = new Uri(appOptions.Urls);
             _fileRepository = fileRepository;
         }
         
         public async Task<ICollection<FileResponseDto>> Upload(IFormFileCollection files)
         {
-            if (files.Any(file => !FileExtensions.Extensions.ContainsKey(Path.GetExtension(file.FileName))))
+            if (files.Any(file => !FileExtensions.Extensions.ContainsKey(Path.GetExtension(file.FileName).ToLower())))
                 return null;
 
             var result = new List<FileResponseDto>();
@@ -50,8 +46,7 @@ namespace Boards.FileStorageService.Core.Services
                 {
                     Name = file.FileName,
                     Path = absolutePath,
-                    Extension = Path.GetExtension(absolutePath),
-                    Url = CreateUrl(absolutePath)
+                    Extension = Path.GetExtension(absolutePath)
                 };
                 result.Add(newfile);
             }
@@ -84,7 +79,7 @@ namespace Boards.FileStorageService.Core.Services
 
         private string CreateAbsolutePath(string fileName)
         {
-            var extension = Path.GetExtension(fileName);
+            var extension = Path.GetExtension(fileName).ToLower();
             var absolutePath = "";
             
             switch (extension)
@@ -102,15 +97,6 @@ namespace Boards.FileStorageService.Core.Services
             }
 
             return absolutePath;
-        }
-
-        private Uri CreateUrl(string path)
-        {
-            var name = Path.GetFileName(path);
-            var catalogue = Directory.GetParent(path);
-            var pathToFile = Path.Combine("api/v1/", catalogue.Parent.Name, catalogue.Name, name);
-            var url = new Uri(_baseUri, pathToFile);
-            return url;
         }
     }
 }
